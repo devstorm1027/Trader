@@ -17,8 +17,10 @@ class Combination(object):
         self.port = int('3306')
 
         self.cursor = self.connect_db()
-        db_temp = """CREATE TABLE IF NOT EXISTS combine ( id INT AUTO_INCREMENT PRIMARY KEY, SymbolNM VARCHAR(255), QuoteDTS VARCHAR(255), CriteriaMet VARCHAR(255), CombinationID VARCHAR(255), CombinationString VARCHAR(255))"""
-        self.cursor.execute(db_temp)
+        # db_temp = """CREATE TABLE IF NOT EXISTS combine ( id INT AUTO_INCREMENT PRIMARY KEY, SymbolNM VARCHAR(255), QuoteDTS VARCHAR(255), CriteriaMet VARCHAR(255), CombinationID VARCHAR(255), CombinationString VARCHAR(255))"""
+        # symbol_db_temp = """CREATE TABLE IF NOT EXISTS symbols ( id INT AUTO_INCREMENT PRIMARY KEY, SymbolNM VARCHAR(255))"""
+        # self.cursor.execute(symbol_db_temp)
+        # self.save_to_db_symbols()
 
     def connect_db(self):
         cnx = {'host': self.host,
@@ -30,7 +32,19 @@ class Combination(object):
         self.conn = pymysql.connect(db=cnx['db'], host=cnx['host'], port=cnx['port'], user=cnx['username'],
                                     password=cnx['password'])
         self.cursor = self.conn.cursor()
+
         return self.cursor
+
+    def save_to_db_symbols(self):
+        def add_quote(w):
+            return '"{}"'.format(w)
+        symbols = ['MCHP', 'MDRX', 'BHVN', 'MAN', 'CGNX', 'KMPR', 'CASI', 'MYOK', 'NBL', 'SRI', 'CARA', 'APEI', 'RFIL', 'RJF', 'CENTA', 'DERM', 'PES', 'INTC', 'IRET', 'IO', 'EXEL', 'TREE', 'JCOM', 'HTHT', 'PFPT', 'SMPL', 'IMMR', 'ARW', 'WSBC', 'BGG', 'ADMA', 'FBT', 'VRAY', 'CLW', 'SANM', 'EXAS', 'HMLP', 'PAH', 'BNED', 'FPRX', 'PBF', 'TPRE', 'JAG', 'EGBN', 'LABD', 'NEOS', 'JFR', 'NHTC', 'LNG', 'ABMD', 'SHAK', 'BGNE', 'EGRX', 'LRN', 'ZG', 'UGAZ', 'RECN', 'ROCK', 'CONN', 'FTR', 'RARE', 'PFGC', 'PJT', 'UGP', 'EDN', 'TYG', 'CHEF', 'FNSR', 'HLNE', 'PSCH', 'FND', 'NERV', 'YTRA', 'TERP', 'MDP', 'TXMD', 'AUO', 'BNO', 'GDXJ', 'UFPI', 'MZOR', 'RDY', 'MMLP', 'FNJN', 'VEEV', 'HSC', 'MOV', 'AMRS', 'CVI', 'IYW', 'FFIV', 'GLNG', 'IVTY', 'SHOO', 'CIR', 'DANOY', 'PDFS', 'MTOR', 'XOG', 'DORM', 'IIIN', 'MODN', 'ENDP', 'CTSO', 'CTS', 'IMMU', 'EBR', 'NVGS', 'GLMD', 'LFVN', 'YELP', 'EXR', 'SNCR', 'HUN', 'HFC', 'HIIQ', 'GCI', 'CAT', 'COLL', 'NBLX', 'VNET', 'JOE', 'WLH', 'EEX', 'CLR', 'NGLOY', 'REPH', 'ENTG', 'CRTO', 'AHT', 'CWH', 'ASHR', 'DO', 'LPX', 'FMCKJ', 'CNX', 'SPLK', 'CO', 'CBS', 'PI', 'RP', 'UA', 'ATNX', 'QTEC', 'TLYS', 'BCC', 'VLP', 'PBH', 'SD', 'SN', 'KIN', 'PNC', 'TRV', 'PIRS', 'MRSN', 'SAH', 'COLB', 'SBGSY', 'WMGI', 'ALNY', 'MDGL', 'KANG', 'NCS', 'PTGX', 'SUPV', 'VIAB', 'NWY', 'BHPLF', 'BHGE', 'KPTI', 'ASND', 'GMRE', 'EVRI', 'CBPO', 'MDSO', 'MVF', 'PRTA', 'RRC', 'STX', 'DISH', 'DDD', 'HHC', 'CNAT', 'IIN', 'XOXO', 'TCS', 'FATE', 'NTLA', 'ENZ', 'CRC', 'JD', 'NG', 'SJT', 'GES', 'BIG', 'APTI', 'XON', 'PETQ', 'HOS', 'BHE', 'SNAP', 'VTL', 'SLM', 'APPN', 'ADSK', 'DEST', 'EADSY', 'KURA', 'RIOT', 'IPG', 'RETA', 'FCB', 'MED', 'SGH', 'VET', 'VREX', 'FANUY', 'QHC', 'QLD', 'ZNGA', 'RESN', 'TKPYY', 'PDCE', 'MRTX', 'LJPC', 'MAG', 'PACW', 'SOXL', 'SIG', 'PTLA', 'FNMAS', 'NSIT', 'KL', 'ATEN', 'PODD', 'ENPH', 'SUP', 'URTY', 'GRBK', 'REI', 'GLCNF', 'OILU', 'ZFGN', 'PUK', 'MGA', 'RRR', 'OIS', 'LABU', 'MPC', 'EEQ', 'ALK', 'SBBP', 'ELS', 'SIGM', 'COBZ', 'COOL', 'VYGR', 'JNUG', 'TFX', 'NSANY', 'CATO', 'VGR', 'NKTR', 'GPS', 'PAGP', 'UBNK', 'RYI', 'AYX', 'UBNT', 'CARB', 'AAON', 'NFLX', 'ZUMZ', 'HIBB', 'SCS', 'BOOM', 'BURL', 'TCP', 'CAR', 'CODYY', 'EXTR', 'IVAC', 'ADI', 'AKRX', 'VKTX', 'XNET', 'AXGN', 'NPO', 'UBSI', 'CAL', 'PNK', 'SCGLY', 'TRHC', 'MLI', 'GIII', 'MD', 'PHM', 'EPZM', 'SNBR', 'ANET', 'FBR', 'USFD', 'ZAYO', 'ICE', 'ABG', 'VAC', 'EQGP', 'NBIX', 'GME', 'STBZ', 'EDU', 'CUTR', 'LOW', 'NVTR', 'BDN', 'SPAR', 'CATY', 'OEC', 'ANGI', 'AMSC', 'RMTI', 'IBP', 'PTCT', 'STML', 'KMT', 'CAF', 'HCHC', 'NEWR', 'GTXI', 'TOL', 'TILE', 'CPS', 'FDX', 'GVA', 'ARKW', 'TSLA', 'HOME', 'SHLM', 'VSH', 'NGVC', 'ELGX', 'UCO', 'CBIO', 'DCOM', 'APVO', 'EDIT', 'KRA', 'HQY', 'GTS', 'HEAR', 'JNP', 'GTHX', 'TKR', 'TREX', 'EVBG', 'BLUE', 'BRKL', 'HMN', 'TSEM', 'ABEO', 'ZGNX', 'TX', 'FPI', 'BLFS', 'GORO', 'ASMB', 'IPGP', 'RDFN', 'GTY', 'HSBC', 'LZB', 'AGYS', 'TOWN', 'HIFR', 'ITRI', 'MIK', 'VICR', 'APTS', 'MLNX', 'NUAN', 'SRCI', 'TUSK', 'BPY', 'TELNY', 'VCEL', 'VLO', 'SCVL', 'CCT', 'TTT', 'CCOI', 'CLUB', 'PLXS', 'ARWR', 'TPIC', 'POAHY', 'KEYS', 'AMBA', 'AOI', 'ARGX', 'ASUR', 'FOLD', 'GRMN', 'TGS', 'BNFT', 'INST', 'TSG', 'NEWM', 'LNTH', 'AKCA', 'MCFT', 'BYD', 'TISI', 'INTU', 'TECL', 'NTNX', 'RESI', 'ASTE', 'AM', 'ZTO', 'KRNT', 'TIVO', 'SPRO', 'SYRS', 'ADAP', 'ERX', 'ASIX', 'CVNA', 'NTRA', 'TRNC', 'XPO', 'SGMO', 'NR', 'CERS', 'RVNC', 'DK', 'WNS', 'CCRC', 'COTV', 'QTNT', 'SIVB', 'YEXT', 'FEP', 'TRYIY', 'GEMP', 'PAM', 'TAHO', 'DBVT', 'FIVE', 'CSIQ', 'PEN', 'VIV', 'GCO', 'SUI', 'SND', 'MGNX', 'ARA', 'SNX', 'MTSI', 'CDNA', 'IBOC', 'FENG', 'CALA', 'CLSD', 'ITCI', 'SFE', 'SFBS', 'REGI', 'UMPQ', 'TDC', 'MHLD', 'GLYC', 'AAOI', 'ATTU', 'FRME', 'SAP', 'EGAN', 'FTAI', 'NSTG', 'QQQX', 'TDY', 'SGSOY', 'GGAL', 'PLCE', 'CALM', 'AROC', 'PUMP', 'GOOS', 'USM', 'HCMLY', 'UEIC', 'FET', 'AIR', 'ORIT', 'GWPH', 'RACE', 'HPT', 'PBPB', 'BMA', 'NRG', 'NTES', 'CMCM', 'GG', 'BRC', 'GGP', 'XES', 'CFR', 'CPF', 'CLDR', 'I', 'SABR', 'MYRG', 'ADVM', 'AQN', 'IVC', 'STAG', 'URI', 'KALU', 'GEM', 'CYRX', 'MMYT', 'MTRX', 'NICE', 'HIMX', 'MBUU', 'VCYT', 'JOBS', 'ZSAN', 'WDR', 'ADS', 'RNP', 'CZR', 'BKE', 'AGIO', 'SINA', 'FANG', 'MEDP', 'YNDX', 'INO', 'ELVT', 'HTZ', 'GOGL', 'ATI', 'ATGE', 'TWOU', 'GFF', 'CSCO', 'SMLP', 'FUL', 'NOK', 'ESTE', 'DAKT', 'TRCO', 'SIEN', 'AMWD', 'FNGN', 'MGEN', 'BTI', 'KBE', 'PCTY', 'FSD', 'NWN', 'SORL', 'CRS', 'GPOR', 'JBAXY', 'MMI', 'FLXN', 'ILG', 'NDSN', 'HBI', 'CSTM', 'SSTI', 'GBT', 'WPM', 'PCOM', 'ITG', 'ARRY', 'TCMD', 'NUS', 'BOLD', 'SVRA', 'GNMK', 'SSP', 'RPD', 'HNGR', 'NLNK', 'PWR', 'BIOC', 'SPTN', 'FB', 'AXL', 'GALT', 'GTN', 'RTRX', 'ANAB', 'XENT', 'FFWM', 'LOXO', 'AGLE', 'CARS', 'ARCB', 'BBSEY', 'SSTK', 'RBA', 'AVDL', 'MORN', 'JNCE', 'IAG', 'LNN', 'PE', 'CYOU', 'MB', 'EXPE', 'WRD', 'CPYYY', 'ENS', 'Z', 'CX', 'LMAT', 'LCI', 'LFUS', 'UWT', 'UEPS', 'APLS', 'AKBA', 'PNFP', 'UNIT', 'FANH', 'WCC', 'GEF', 'TEI', 'BDJ', 'BXC', 'ISNPY', 'MSFT', 'JDST']
+        for symbol in symbols:
+            self.cursor.execute("""INSERT INTO symbols (SymbolNM) VALUES ({})"""
+                                .format(
+                                add_quote(symbol)))
+            self.conn.commit()
+        print('succeessed')
 
     def pull_col_names(self):
         self.cursor.execute("SHOW COLUMNS FROM history ")
@@ -42,13 +56,20 @@ class Combination(object):
         histories = self.cursor.fetchall()
         return histories
 
-    def combination_from_symbol(self, symbols, num_of_indic):
+    def pull_symbols_from_db(self):
+        self.cursor.execute("SELECT SymbolNM FROM symbols")
+        symbols = self.cursor.fetchall()
+        return symbols
+
+    def combination_from_symbol(self, num_of_indic):
+        symbols = self.pull_symbols_from_db()
         col_names = self.pull_col_names()
         histories = self.pull_history()
         sorted_files = []
+
         for result in histories:
             for symbol in symbols:
-                if symbol == result[1]:
+                if ''.join(symbol) == result[1]:
                     sorted_files.append(result)
 
         self.combination_data(sorted_files, col_names, num_of_indic)
@@ -239,15 +260,15 @@ if __name__ == '__main__':
     # results = [i for i in glob.glob('*.{}'.format(extension))]
 
     # Import the symbol data from origin csv
-    symbols = []
-    with open('Symbols.csv') as csvfile:
-        for line in csvfile.readlines():
-            array = line.split(',')
-            symbols.append(array[0].strip())
-    symbols = symbols[1:]
+    # symbols = []
+    # with open('Symbols.csv') as csvfile:
+    #     for line in csvfile.readlines():
+    #         array = line.split(',')
+    #         symbols.append(array[0].strip())
+    # symbols = symbols[1:]
     num_of_indic = 15
     num_maximum_string = 6
-    cb.combination_from_symbol(symbols, num_of_indic)
+    cb.combination_from_symbol(num_of_indic)
     # histories = []
     # with open('history.csv') as csvfile:
     #     for line in csvfile.readlines():
